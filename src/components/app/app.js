@@ -16,7 +16,8 @@ class App extends Component {
                 {name: 'John C.1', salary: 800, increase: false, rise: true, id:1},
                 {name: 'John C.2', salary: 2800, increase: true, rise: false, id:2},
                 {name: 'John C.3', salary: 1800, increase: false, rise: false, id:3},
-            ]
+            ],
+            term: ''
         }
 
         this.maxId = 4;
@@ -24,13 +25,6 @@ class App extends Component {
 
     deleteItem = (id) => {
         this.setState(({data}) => {
-            // const index = data.findIndex(elem => elem.id === id);
-
-            // 1)
-            // const before = data.slice(0, index);
-            // const after = data.slice(index + 1);
-            //
-            // const newArr = [...before, ...after];
 
             return {
                 // 2)
@@ -66,9 +60,24 @@ class App extends Component {
         }))
     }
 
+    searchEmp = (items, term) => {
+        if (term.length === 0 ) {
+            return items;
+        }
+        return  items.filter(item => {
+            return item.name.indexOf(term) > -1
+        })
+    }
+
+    onUpdateSearch = (term) => {
+        this.setState({term});
+    }
+
     render() {
+        const {data, term} = this.state;
         const employees = this.state.data.length;
         const increased = this.state.data.filter(item => item.increase).length;
+        const visibleData = this.searchEmp(data, term);
 
         return (
             <div className="app">
@@ -78,12 +87,14 @@ class App extends Component {
                 />
 
                 <div className="search-panel">
-                    <SearchPanel/>
+                    <SearchPanel
+                        onUpdateSearch={this.onUpdateSearch}
+                    />
                     <AppFilter/>
                 </div>
 
                 <EmployeesList
-                    data={this.state.data}
+                    data={visibleData}
                     onDelete={this.deleteItem}
                     onToggleProp={this.onToggleProp}
                 />
